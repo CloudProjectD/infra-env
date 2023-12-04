@@ -13,14 +13,14 @@ output "subnet_ids" {
   ]
 }
 
-output "asg_subnet_ids" {
+output "asg_private_subnet_ids" {
   value = [
     aws_subnet.private-subnet-a.id,
     aws_subnet.private-subnet-b.id,
   ]
 }
 
-output "db_subnet_ids" {
+output "db_private_subnet_ids" {
   value = [
     aws_subnet.private-subnet-c.id,
     aws_subnet.private-subnet-d.id,
