@@ -139,3 +139,41 @@ resource "aws_autoscaling_group" "khu-asg" {
   min_size         = 2
   max_size         = 5
 }
+
+# load balancer
+resource "aws_lb" "khu-alb" {
+  name               = "khu-alb"
+  internal           = false
+  load_balancer_type = "application"
+
+  security_groups = [aws_security_group.alb-sg.id]
+  subnets         = var.private_subnet_ids
+
+  tags = {
+    Name = "${var.env_name}-alb"
+  }
+}
+
+resource "aws_lb_listener" "khu-alb-listner" {
+  load_balancer_arn = aws_lb.khu-alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.khu-alb-tg.arn
+  }
+}
+
+resource "aws_lb_target_group" "khu-alb-tg" {
+  name     = "khu-alb-tg"
+  port     = 8000
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+}
+
+resource "aws_lb_target_group_attachment" "khu-tg-attach" {
+  target_group_arn = aws_lb_target_group.khu-alb-tg.arn
+  target_id        = aws_autoscaling_group.khu-asg.id
+  port             = 8000
+}
