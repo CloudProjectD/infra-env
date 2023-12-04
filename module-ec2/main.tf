@@ -113,3 +113,29 @@ resource "aws_security_group" "alb-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+# auto scaling group
+resource "aws_launch_configuration" "khu-launch-config" {
+  image_id        = data.aws_ami.ubuntu.id
+  instance_type   = "t2.micro"
+  security_groups = [aws_security_group.asg-alb-sg.id, aws_security_group.asg-bastion-sg.id]
+  key_name        = "vockey2"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "khu-asg" {
+  launch_configuration = aws_launch_configuration.khu-launch-config.name
+  vpc_zone_identifier  = var.private_subnet_ids
+
+  target_group_arns = [aws_lb_target_group.khu-alb-tg.arn]
+  # lb tg가 생성되어 arn이 지정된 후 사용 가능하므로 
+  depends_on        = [aws_lb_target_group.khu-alb-tg]
+  health_check_type = "ELB"
+
+  desired_capacity = 2
+  min_size         = 2
+  max_size         = 5
+}
