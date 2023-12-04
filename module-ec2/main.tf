@@ -30,3 +30,29 @@ resource "aws_instance" "bastion-host" {
     Name = "${var.env_name}-bastion"
   }
 }
+
+# eip
+resource "aws_eip" "bastion" {
+  instance = aws_instance.bastion-host.id
+  domain   = "vpc"
+}
+
+# security groups
+resource "aws_security_group" "bastion-sg" {
+  name   = "bastion-sg"
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
