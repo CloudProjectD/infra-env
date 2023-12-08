@@ -15,14 +15,6 @@ variable "bastion_subnet_id" {
   type = string
 }
 
-variable "private_subnet_a_id" {
-  type = string
-}
-
-variable "private_subnet_b_id" {
-  type = string
-}
-
 variable "private_subnet_ids" {
   type = list(any)
 }
