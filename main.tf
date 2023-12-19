@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "khu-market-dusdj-0813"
+    bucket = "khu-market-tf-0813"
     key    = "kyunghee-market/backend"
     region = "us-east-1"
   }
